@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useKeyPress from '../../utilities/hooks/useKeyPress';
+import useInterval from '../../utilities/hooks/useInterval';
 import Cell from '../cell/cell.component';
 import './board.style.scss';
 
@@ -28,50 +29,65 @@ const Board = () => {
     setBody([head, ...nBody]);
   };
 
+  const moveSnake = () => {
+    switch (direction) {
+      case 'up':
+        if (head.y === 0) {
+          setHead({ ...head, y: cellCount - 1 });
+        } else {
+          setHead({ ...head, y: head.y - 1 });
+        }
+        moveBodyAndTail();
+        break;
+      case 'down':
+        if (head.y === cellCount - 1) {
+          setHead({ ...head, y: 0 });
+        } else {
+          setHead({ ...head, y: head.y + 1 });
+        }
+        moveBodyAndTail();
+        break;
+      case 'right':
+        if (head.x === cellCount - 1) {
+          setHead({ ...head, x: 0 });
+        } else {
+          setHead({ ...head, x: head.x + 1 });
+        }
+        moveBodyAndTail();
+        break;
+      case 'left':
+        if (head.x === 0) {
+          setHead({ ...head, x: cellCount - 1 });
+        } else {
+          setHead({ ...head, x: head.x - 1 });
+        }
+        moveBodyAndTail();
+        break;
+      default:
+        break;
+    }
+  };
+
   const handleKeyDown = (key) => {
     switch (key) {
       case 'ArrowUp':
         if (direction !== 'down') {
-          if (head.y === 0) {
-            setHead({ ...head, y: cellCount - 1 });
-          } else {
-            setHead({ ...head, y: head.y - 1 });
-          }
           setDirection('up');
-          moveBodyAndTail();
         }
         break;
       case 'ArrowDown':
         if (direction !== 'up') {
-          if (head.y === cellCount - 1) {
-            setHead({ ...head, y: 0 });
-          } else {
-            setHead({ ...head, y: head.y + 1 });
-          }
           setDirection('down');
-          moveBodyAndTail();
         }
         break;
       case 'ArrowRight':
         if (direction !== 'left') {
-          if (head.x === cellCount - 1) {
-            setHead({ ...head, x: 0 });
-          } else {
-            setHead({ ...head, x: head.x + 1 });
-          }
           setDirection('right');
-          moveBodyAndTail();
         }
         break;
       case 'ArrowLeft':
         if (direction !== 'right') {
-          if (head.x === 0) {
-            setHead({ ...head, x: cellCount - 1 });
-          } else {
-            setHead({ ...head, x: head.x - 1 });
-          }
           setDirection('left');
-          moveBodyAndTail();
         }
         break;
       default:
@@ -84,6 +100,10 @@ const Board = () => {
       handleKeyDown(keyPressed);
     }
   }, [keyPressed]);
+
+  useInterval(() => {
+    moveSnake();
+  }, 100);
 
   return (
     <div>

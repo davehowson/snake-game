@@ -1,12 +1,13 @@
 {
-  "name": "react-boilerplate",
+  "name": "react-snake-game",
   "version": "1.0.0",
-  "description": "a simple react-boilerplate",
+  "description": "a simple react-snake-game",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --config build-utils/webpack.config.js --env.env=dev",
     "build": "webpack --config build-utils/webpack.config.js --env.env=prod",
-    "lint": "eslint . --ext .js,jsx"
+    "lint": "eslint . --ext .js,jsx",
+    "lint:fix": "eslint . --ext .js,jsx --fix"
   },
   "author": "",
   "license": "ISC",

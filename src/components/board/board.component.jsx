@@ -4,7 +4,7 @@ import Cell from '../cell/cell.component';
 import './board.style.scss';
 
 const Board = () => {
-  const [rows] = useState(20);
+  const [cellCount] = useState(20);
   const [head, setHead] = useState({ x: 1, y: 10 });
   const [body, setBody] = useState([
     { x: 1, y: 11 },
@@ -32,28 +32,44 @@ const Board = () => {
     switch (key) {
       case 'ArrowUp':
         if (direction !== 'down') {
-          setHead({ ...head, y: head.y - 1 });
+          if (head.y === 0) {
+            setHead({ ...head, y: cellCount - 1 });
+          } else {
+            setHead({ ...head, y: head.y - 1 });
+          }
           setDirection('up');
           moveBodyAndTail();
         }
         break;
       case 'ArrowDown':
         if (direction !== 'up') {
-          setHead({ ...head, y: head.y + 1 });
+          if (head.y === cellCount - 1) {
+            setHead({ ...head, y: 0 });
+          } else {
+            setHead({ ...head, y: head.y + 1 });
+          }
           setDirection('down');
           moveBodyAndTail();
         }
         break;
       case 'ArrowRight':
         if (direction !== 'left') {
-          setHead({ ...head, x: head.x + 1 });
+          if (head.x === cellCount - 1) {
+            setHead({ ...head, x: 0 });
+          } else {
+            setHead({ ...head, x: head.x + 1 });
+          }
           setDirection('right');
           moveBodyAndTail();
         }
         break;
       case 'ArrowLeft':
         if (direction !== 'right') {
-          setHead({ ...head, x: head.x - 1 });
+          if (head.x === 0) {
+            setHead({ ...head, x: cellCount - 1 });
+          } else {
+            setHead({ ...head, x: head.x - 1 });
+          }
           setDirection('left');
           moveBodyAndTail();
         }
@@ -72,9 +88,9 @@ const Board = () => {
   return (
     <div>
       <div className="board">
-        {[...Array(rows).keys()].map((y) => (
+        {[...Array(cellCount).keys()].map((y) => (
           <div className="row" id={y} key={y}>
-            {[...Array(rows).keys()].map((x) => (
+            {[...Array(cellCount).keys()].map((x) => (
               <Cell
                 head={head}
                 body={body}

@@ -15,7 +15,9 @@ const Board = () => {
     { x: 1, y: 15 },
   ]);
   const [tail, setTail] = useState({ x: 1, y: 16 });
-  const [direction, setDirection] = useState('top');
+  const [direction, setDirection] = useState('up');
+  const [gameState, setGameState] = useState('paused'); // paused, started, finished
+
   const keyPressed = useKeyPress([
     'ArrowUp',
     'ArrowDown',
@@ -95,15 +97,26 @@ const Board = () => {
     }
   };
 
+  const handleGameStateSwitch = () => {
+    if (gameState === 'started') {
+      setGameState('paused');
+    } else {
+      setGameState('started');
+    }
+  };
+
   useEffect(() => {
     if (keyPressed) {
       handleKeyDown(keyPressed);
     }
   }, [keyPressed]);
 
-  useInterval(() => {
-    moveSnake();
-  }, 100);
+  useInterval(
+    () => {
+      moveSnake();
+    },
+    gameState === 'started' ? 100 : null
+  );
 
   return (
     <div>
@@ -122,6 +135,15 @@ const Board = () => {
             ))}
           </div>
         ))}
+      </div>
+      <div>
+        <button
+          type="button"
+          className="start-button"
+          onClick={() => handleGameStateSwitch()}
+        >
+          {gameState === 'started' ? 'pause' : 'start'}
+        </button>
       </div>
     </div>
   );

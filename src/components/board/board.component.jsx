@@ -13,10 +13,13 @@ const Board = () => {
     { x: 1, y: 13 },
     { x: 1, y: 14 },
     { x: 1, y: 15 },
+    { x: 1, y: 16 },
+    { x: 1, y: 17 },
   ]);
-  const [tail, setTail] = useState({ x: 1, y: 16 });
+  const [tail, setTail] = useState({ x: 1, y: 18 });
   const [direction, setDirection] = useState('up');
   const [gameState, setGameState] = useState('paused'); // paused, started, finished
+  const [changeDirection, setChangeDirection] = useState(false);
 
   const keyPressed = useKeyPress([
     'ArrowUp',
@@ -31,6 +34,12 @@ const Board = () => {
     setBody([head, ...nBody]);
   };
 
+  useEffect(() => {
+    if (body.some((p) => p.x === head.x && p.y === head.y)) {
+      setGameState('finished');
+    }
+  }, [head.x, head.y]);
+
   const moveSnake = () => {
     switch (direction) {
       case 'up':
@@ -39,7 +48,6 @@ const Board = () => {
         } else {
           setHead({ ...head, y: head.y - 1 });
         }
-        moveBodyAndTail();
         break;
       case 'down':
         if (head.y === cellCount - 1) {
@@ -47,7 +55,6 @@ const Board = () => {
         } else {
           setHead({ ...head, y: head.y + 1 });
         }
-        moveBodyAndTail();
         break;
       case 'right':
         if (head.x === cellCount - 1) {
@@ -55,7 +62,6 @@ const Board = () => {
         } else {
           setHead({ ...head, x: head.x + 1 });
         }
-        moveBodyAndTail();
         break;
       case 'left':
         if (head.x === 0) {
@@ -63,37 +69,43 @@ const Board = () => {
         } else {
           setHead({ ...head, x: head.x - 1 });
         }
-        moveBodyAndTail();
         break;
       default:
         break;
     }
+    moveBodyAndTail();
   };
 
   const handleKeyDown = (key) => {
-    switch (key) {
-      case 'ArrowUp':
-        if (direction !== 'down') {
-          setDirection('up');
-        }
-        break;
-      case 'ArrowDown':
-        if (direction !== 'up') {
-          setDirection('down');
-        }
-        break;
-      case 'ArrowRight':
-        if (direction !== 'left') {
-          setDirection('right');
-        }
-        break;
-      case 'ArrowLeft':
-        if (direction !== 'right') {
-          setDirection('left');
-        }
-        break;
-      default:
-        break;
+    if (!changeDirection) {
+      switch (key) {
+        case 'ArrowUp':
+          if (direction !== 'down') {
+            setDirection('up');
+            setChangeDirection(true);
+          }
+          break;
+        case 'ArrowDown':
+          if (direction !== 'up') {
+            setDirection('down');
+            setChangeDirection(true);
+          }
+          break;
+        case 'ArrowRight':
+          if (direction !== 'left') {
+            setDirection('right');
+            setChangeDirection(true);
+          }
+          break;
+        case 'ArrowLeft':
+          if (direction !== 'right') {
+            setDirection('left');
+            setChangeDirection(true);
+          }
+          break;
+        default:
+          break;
+      }
     }
   };
 
@@ -114,8 +126,9 @@ const Board = () => {
   useInterval(
     () => {
       moveSnake();
+      setChangeDirection(false);
     },
-    gameState === 'started' ? 100 : null
+    gameState === 'started' ? 200 : null
   );
 
   return (
@@ -141,9 +154,11 @@ const Board = () => {
           type="button"
           className="start-button"
           onClick={() => handleGameStateSwitch()}
+          disabled={gameState === 'finished'}
         >
           {gameState === 'started' ? 'pause' : 'start'}
         </button>
+        {gameState === 'finished' && <p>Game Over</p>}
       </div>
     </div>
   );

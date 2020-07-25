@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import './cell.style.scss';
 
-const Cell = ({ head, body, tail, x, y }) => {
+const Cell = ({ head, body, tail, x, y, pellet }) => {
   if (x === head.x && y === head.y) {
     return <div className="cell">H</div>;
   }
@@ -12,6 +12,9 @@ const Cell = ({ head, body, tail, x, y }) => {
   }
   if (x === tail.x && y === tail.y) {
     return <div className="cell">T</div>;
+  }
+  if (x === pellet.x && y === pellet.y) {
+    return <div className="cell">P</div>;
   }
   return <div className="cell" />;
 };
@@ -35,4 +38,8 @@ Cell.propTypes = {
   }).isRequired,
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
+  pellet: PropTypes.shape({
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+  }).isRequired,
 };

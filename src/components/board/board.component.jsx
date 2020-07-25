@@ -6,18 +6,16 @@ import './board.style.scss';
 
 const Board = () => {
   const [cellCount] = useState(20);
+  const [duration] = useState(250);
   const [head, setHead] = useState({ x: 1, y: 10 });
   const [body, setBody] = useState([
     { x: 1, y: 11 },
     { x: 1, y: 12 },
-    { x: 1, y: 13 },
-    { x: 1, y: 14 },
-    { x: 1, y: 15 },
-    { x: 1, y: 16 },
-    { x: 1, y: 17 },
   ]);
-  const [tail, setTail] = useState({ x: 1, y: 18 });
+  const [tail, setTail] = useState({ x: 1, y: 13 });
+  const [pellet, setPellet] = useState({ x: 5, y: 5 });
   const [direction, setDirection] = useState('up');
+  const [pelletEaten, setPelletEaten] = useState(false);
   const [gameState, setGameState] = useState('paused'); // paused, started, finished
   const [changeDirection, setChangeDirection] = useState(false);
 
@@ -29,16 +27,16 @@ const Board = () => {
   ]);
 
   const moveBodyAndTail = () => {
-    setTail(body[body.length - 1]);
-    const nBody = body.filter((x, y) => y !== body.length - 1);
+    if (!pelletEaten) {
+      setTail(body[body.length - 1]);
+    } else {
+      setPelletEaten(false);
+    }
+    const nBody = pelletEaten
+      ? body
+      : body.filter((x, y) => y !== body.length - 1);
     setBody([head, ...nBody]);
   };
-
-  useEffect(() => {
-    if (body.some((p) => p.x === head.x && p.y === head.y)) {
-      setGameState('finished');
-    }
-  }, [head.x, head.y]);
 
   const moveSnake = () => {
     switch (direction) {
@@ -117,6 +115,13 @@ const Board = () => {
     }
   };
 
+  const getRandomCell = () => {
+    return {
+      x: Math.floor(Math.random() * (cellCount - 1 - 0 + 1) + 0),
+      y: Math.floor(Math.random() * (cellCount - 1 - 0 + 1) + 0),
+    };
+  };
+
   useEffect(() => {
     if (keyPressed) {
       handleKeyDown(keyPressed);
@@ -127,8 +132,23 @@ const Board = () => {
     () => {
       moveSnake();
       setChangeDirection(false);
+
+      if (body.some((p) => p.x === head.x && p.y === head.y)) {
+        setGameState('finished');
+      } else if (head.x === pellet.x && head.y === pellet.y) {
+        setPelletEaten(true);
+        setPellet(getRandomCell());
+      }
     },
-    gameState === 'started' ? 200 : null
+    gameState === 'started' ? duration : null
+  );
+
+  useInterval(
+    () => {
+      setPellet(getRandomCell());
+    },
+    gameState === 'started' ? duration * cellCount : null,
+    pelletEaten
   );
 
   return (
@@ -144,6 +164,7 @@ const Board = () => {
                 x={x}
                 y={y}
                 key={`${x}-${y}`}
+                pellet={pellet}
               />
             ))}
           </div>

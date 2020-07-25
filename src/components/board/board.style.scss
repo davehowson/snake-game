@@ -1,5 +1,11 @@
+.board {
+  border: 1px solid black;
+  display: inline-flex;
+  flex-direction: column;
+}
+
 .row {
-  display: flex;
+  display: inline-flex;
 }
 
 .start-button {

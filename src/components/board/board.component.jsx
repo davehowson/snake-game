@@ -6,7 +6,7 @@ import './board.style.scss';
 
 const Board = () => {
   const [cellCount] = useState(20);
-  const [duration] = useState(250);
+  const [duration] = useState(100);
   const [head, setHead] = useState({ x: 1, y: 10 });
   const [body, setBody] = useState([
     { x: 1, y: 11 },
@@ -115,10 +115,26 @@ const Board = () => {
     }
   };
 
+  const cellIsInSnake = ({ x, y }) => {
+    if (
+      body.some((c) => c.x === x && c.y === y) ||
+      (head.x === x && head.y === y) ||
+      (tail.x === x && tail.y === x)
+    )
+      return true;
+    return false;
+  };
+
   const getRandomCell = () => {
+    let x;
+    let y;
+    do {
+      x = Math.floor(Math.random() * (cellCount - 1 - 0 + 1) + 0);
+      y = Math.floor(Math.random() * (cellCount - 1 - 0 + 1) + 0);
+    } while (cellIsInSnake({ x, y }));
     return {
-      x: Math.floor(Math.random() * (cellCount - 1 - 0 + 1) + 0),
-      y: Math.floor(Math.random() * (cellCount - 1 - 0 + 1) + 0),
+      x,
+      y,
     };
   };
 
@@ -147,7 +163,7 @@ const Board = () => {
     () => {
       setPellet(getRandomCell());
     },
-    gameState === 'started' ? duration * cellCount : null,
+    gameState === 'started' ? duration * cellCount * 2 : null,
     pelletEaten
   );
 

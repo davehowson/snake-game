@@ -18,6 +18,7 @@ const Board = () => {
   const [pelletEaten, setPelletEaten] = useState(false);
   const [gameState, setGameState] = useState('paused'); // paused, started, finished
   const [changeDirection, setChangeDirection] = useState(false);
+  const [score, setScore] = useState(0);
 
   const keyPressed = useKeyPress([
     'ArrowUp',
@@ -154,6 +155,7 @@ const Board = () => {
       } else if (head.x === pellet.x && head.y === pellet.y) {
         setPelletEaten(true);
         setPellet(getRandomCell());
+        setScore(score + 1);
       }
     },
     gameState === 'started' ? duration : null
@@ -185,6 +187,9 @@ const Board = () => {
             ))}
           </div>
         ))}
+      </div>
+      <div className="score">
+        <p>score : {score}</p>
       </div>
       <div>
         <button

@@ -6,7 +6,7 @@ import './board.style.scss';
 
 const Board = () => {
   const [cellCount] = useState(20);
-  const [duration] = useState(100);
+  const [duration] = useState(150);
   const [head, setHead] = useState({ x: 1, y: 10 });
   const [body, setBody] = useState([
     { x: 1, y: 11 },
@@ -37,83 +37,7 @@ const Board = () => {
       ? body
       : body.filter((x, y) => y !== body.length - 1);
     setBody([head, ...nBody]);
-  };
-
-  const moveSnake = () => {
-    switch (direction) {
-      case 'up':
-        if (head.y === 0) {
-          setHead({ ...head, y: cellCount - 1 });
-        } else {
-          setHead({ ...head, y: head.y - 1 });
-        }
-        break;
-      case 'down':
-        if (head.y === cellCount - 1) {
-          setHead({ ...head, y: 0 });
-        } else {
-          setHead({ ...head, y: head.y + 1 });
-        }
-        break;
-      case 'right':
-        if (head.x === cellCount - 1) {
-          setHead({ ...head, x: 0 });
-        } else {
-          setHead({ ...head, x: head.x + 1 });
-        }
-        break;
-      case 'left':
-        if (head.x === 0) {
-          setHead({ ...head, x: cellCount - 1 });
-        } else {
-          setHead({ ...head, x: head.x - 1 });
-        }
-        break;
-      default:
-        break;
-    }
-    moveBodyAndTail();
-  };
-
-  const handleKeyDown = (key) => {
-    if (!changeDirection) {
-      switch (key) {
-        case 'ArrowUp':
-          if (direction !== 'down') {
-            setDirection('up');
-            setChangeDirection(true);
-          }
-          break;
-        case 'ArrowDown':
-          if (direction !== 'up') {
-            setDirection('down');
-            setChangeDirection(true);
-          }
-          break;
-        case 'ArrowRight':
-          if (direction !== 'left') {
-            setDirection('right');
-            setChangeDirection(true);
-          }
-          break;
-        case 'ArrowLeft':
-          if (direction !== 'right') {
-            setDirection('left');
-            setChangeDirection(true);
-          }
-          break;
-        default:
-          break;
-      }
-    }
-  };
-
-  const handleGameStateSwitch = () => {
-    if (gameState === 'started') {
-      setGameState('paused');
-    } else {
-      setGameState('started');
-    }
+    setChangeDirection(false);
   };
 
   const cellIsInSnake = ({ x, y }) => {
@@ -139,6 +63,103 @@ const Board = () => {
     };
   };
 
+  const checkAndSetHead = (h) => {
+    if (
+      body.some((b) => b.x === h.x && b.y === h.y) ||
+      (h.x === tail.x && h.y === tail.y)
+    ) {
+      setGameState('finished');
+    } else if (h.x === pellet.x && h.y === pellet.y) {
+      setPelletEaten(true);
+      setPellet(getRandomCell());
+      setScore(score + 1);
+    }
+    setHead(h);
+  };
+
+  const moveSnake = () => {
+    switch (direction) {
+      case 'up':
+        if (head.y === 0) {
+          checkAndSetHead({ ...head, y: cellCount - 1 });
+        } else {
+          checkAndSetHead({ ...head, y: head.y - 1 });
+        }
+        break;
+      case 'down':
+        if (head.y === cellCount - 1) {
+          checkAndSetHead({ ...head, y: 0 });
+        } else {
+          checkAndSetHead({ ...head, y: head.y + 1 });
+        }
+        break;
+      case 'right':
+        if (head.x === cellCount - 1) {
+          checkAndSetHead({ ...head, x: 0 });
+        } else {
+          checkAndSetHead({ ...head, x: head.x + 1 });
+        }
+        break;
+      case 'left':
+        if (head.x === 0) {
+          checkAndSetHead({ ...head, x: cellCount - 1 });
+        } else {
+          checkAndSetHead({ ...head, x: head.x - 1 });
+        }
+        break;
+      default:
+        break;
+    }
+    moveBodyAndTail();
+  };
+
+  const handleKeyDown = (key) => {
+    if (!changeDirection) {
+      setChangeDirection(true);
+      switch (key) {
+        case 'ArrowUp':
+          if (direction !== 'down') {
+            setDirection('up');
+          }
+          break;
+        case 'ArrowDown':
+          if (direction !== 'up') {
+            setDirection('down');
+          }
+          break;
+        case 'ArrowRight':
+          if (direction !== 'left') {
+            setDirection('right');
+          }
+          break;
+        case 'ArrowLeft':
+          if (direction !== 'right') {
+            setDirection('left');
+          }
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
+  const handleGameStateSwitch = () => {
+    if (gameState === 'started') {
+      setGameState('paused');
+    } else if (gameState === 'finished') {
+      setHead({ x: 1, y: 10 });
+      setBody([
+        { x: 1, y: 11 },
+        { x: 1, y: 12 },
+      ]);
+      setTail({ x: 1, y: 13 });
+      setDirection('up');
+      setGameState('started');
+    } else {
+      setGameState('started');
+    }
+  };
+
   useEffect(() => {
     if (keyPressed) {
       handleKeyDown(keyPressed);
@@ -148,15 +169,6 @@ const Board = () => {
   useInterval(
     () => {
       moveSnake();
-      setChangeDirection(false);
-
-      if (body.some((p) => p.x === head.x && p.y === head.y)) {
-        setGameState('finished');
-      } else if (head.x === pellet.x && head.y === pellet.y) {
-        setPelletEaten(true);
-        setPellet(getRandomCell());
-        setScore(score + 1);
-      }
     },
     gameState === 'started' ? duration : null
   );
@@ -198,7 +210,6 @@ const Board = () => {
           type="button"
           className="start-button"
           onClick={() => handleGameStateSwitch()}
-          disabled={gameState === 'finished'}
         >
           {gameState === 'started' ? 'pause' : 'start'}
         </button>

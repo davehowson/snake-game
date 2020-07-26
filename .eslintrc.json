@@ -16,7 +16,9 @@
     "sourceType": "module"
   },
   "plugins": ["react"],
-  "rules": {},
+  "rules": {
+    "react/jsx-one-expression-per-line": "off"
+  },
   "overrides": [
     {
       "files": ["webpack.*.js", "postcss.config.js"],
@@ -29,8 +31,7 @@
     {
       "files": ["index.js"],
       "rules": {
-        "react/jsx-filename-extension": 0,
-        "react/jsx-one-expression-per-line": 0
+        "react/jsx-filename-extension": 0
       }
     }
   ]

@@ -170,23 +170,25 @@ const Board = () => {
   );
 
   return (
-    <div>
-      <div className="board">
-        {[...Array(cellCount).keys()].map((y) => (
-          <div className="row" id={y} key={y}>
-            {[...Array(cellCount).keys()].map((x) => (
-              <Cell
-                head={head}
-                body={body}
-                tail={tail}
-                x={x}
-                y={y}
-                key={`${x}-${y}`}
-                pellet={pellet}
-              />
-            ))}
-          </div>
-        ))}
+    <div className="container">
+      <div>
+        <div className="board">
+          {[...Array(cellCount).keys()].map((y) => (
+            <div className="row" id={y} key={y}>
+              {[...Array(cellCount).keys()].map((x) => (
+                <Cell
+                  head={head}
+                  body={body}
+                  tail={tail}
+                  x={x}
+                  y={y}
+                  key={`${x}-${y}`}
+                  pellet={pellet}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
       <div className="score">
         <p>score : {score}</p>

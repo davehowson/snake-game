@@ -1,0 +1,28 @@
+.cell {
+  width: 15px;
+  height: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cell--inner {
+  height: 100%;
+  width: 100%;
+}
+
+.cell--inner__head {
+  background-color: grey;
+}
+
+.cell--inner__body {
+  background-color: grey;
+}
+
+.cell--inner__tail {
+  background-color: grey;
+}
+
+.cell--inner__pellet {
+  background-color: brown;
+}

@@ -21,7 +21,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      title: 'react-boilerplate',
+      title: 'snake game',
       template: './src/index.html',
     }),
   ],
